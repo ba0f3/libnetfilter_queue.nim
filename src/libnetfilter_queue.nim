@@ -16,8 +16,8 @@ import posix, private/nfnetlink_queue
 export nfnetlink_queue
 
 type
-  nfq_callback* = proc (qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfad: ptr nfq_data;
-                     data: pointer): cint
+  nfq_callback* = (proc(qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfad: ptr nfq_data;
+                     data: pointer): cint)
 
   nfnl_handle* {.bycopy.} = object
   nfnl_subsys_handle* {.bycopy.} = object
@@ -32,7 +32,7 @@ type
     next*: ptr nfq_q_handle
     h*: ptr nfq_handle
     id*: uint16
-    cb*: ptr nfq_callback
+    cb*: nfq_callback
     data*: pointer
 
   nfq_data* {.bycopy.} = object
@@ -49,6 +49,14 @@ type
   ip6_hdr* {.bycopy.} = object
 
 const
+  NF_DROP* = 0
+  NF_ACCEPT* = 1
+  NF_STOLEN* = 2
+  NF_QUEUE* = 3
+  NF_REPEAT* = 4
+  NF_STOP* = 5
+  NF_MAX_VERDICT* = NF_STOP
+
   NFQ_XML_HW* = (1 shl 0)
   NFQ_XML_MARK* = (1 shl 1)
   NFQ_XML_DEV* = (1 shl 2)

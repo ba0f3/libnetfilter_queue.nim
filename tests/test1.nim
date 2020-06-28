@@ -1,11 +1,14 @@
 import posix, libnetfilter_queue
 
 proc cb(qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data: pointer): cint =
-  var verdict: cint
-  #var id: uint32 = treat_pkt(nfa, addr(verdict))
-  ##  Treat packet
-  #return nfq_set_verdict(qh, id, verdict, 0, nil)
-  ##  Verdict packet
+  var
+    id: uint32
+    ph: ptr nfqnl_msg_packet_hdr
+
+  ph = nfq_get_msg_packet_hdr(nfa)
+  id = ntohl(ph.packet_id.uint32)
+  echo "hello from callback id=", id
+  return nfq_set_verdict(qh, id, NF_ACCEPT, 0, nil)
 
 when isMainModule:
   var h = nfq_open()
@@ -18,7 +21,8 @@ when isMainModule:
   if nfq_bind_pf(h, AF_INET.uint16) < 0:
     quit("error during nfq_bind_pf()")
 
-  var qh: ptr nfq_q_handle
+  var
+    qh: ptr nfq_q_handle
   qh = nfq_create_queue(h, 0, cb, nil)
   if qh == nil:
     quit("error during nfq_create_queue()")
