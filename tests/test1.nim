@@ -1,6 +1,6 @@
-import posix, libnetfilter_queue
+import posix, libnetfilter_queue/raw
 
-proc cb(qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data: pointer): cint =
+proc cb(qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data: pointer): cint {.cdecl.} =
   var
     id: uint32
     ph: ptr nfqnl_msg_packet_hdr
@@ -8,7 +8,7 @@ proc cb(qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data: poin
   ph = nfq_get_msg_packet_hdr(nfa)
   id = ntohl(ph.packet_id.uint32)
   echo "hello from callback id=", id
-  return nfq_set_verdict(qh, id, NF_ACCEPT, 0, nil)
+  return nfq_set_verdict(qh, id, 1, 0, nil)
 
 when isMainModule:
   var h = nfq_open()
@@ -36,10 +36,9 @@ when isMainModule:
     buf = cast[cstring](alloc(4096))
   while true:
     rv = recv(fd, buf, 4096, 0).cint
-    if rv < 0:
-      break
-    echo "pkt received"
-    discard nfq_handle_packet(h, buf, rv)
+    if rv >= 0:
+      echo "pkt received"
+      discard nfq_handle_packet(h, buf, rv)
   echo "unbinding from queue 0"
   discard nfq_destroy_queue(qh)
   echo "closing library handle"
