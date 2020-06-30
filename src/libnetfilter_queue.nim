@@ -13,8 +13,8 @@ const
 
 type
   NetfilterQueue* = object
-    h: ptr nfq_handle
-    qh: ptr nfq_q_handle
+    h: nfq_handle
+    qh: nfq_q_handle
     fd: SocketHandle
     running*: bool
 
@@ -27,7 +27,7 @@ type
 
 template error(msg: string) = raise newException(IOError, msg)
 
-proc nfq_callback(qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data: pointer): int32 {.cdecl.} =
+proc nfq_callback(qh: nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data: pointer): int32 {.cdecl.} =
   var
     ph = nfq_get_msg_packet_hdr(nfa)
     id = ntohl(ph.packet_id.uint32)
@@ -46,8 +46,8 @@ proc nfq_callback(qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; 
 proc initNetfilterQueue*(num: uint16, cb: Callback): NetfilterQueue =
   ## Register `cb` to NFQUEUE `num`
   var
-    h: ptr nfq_handle
-    qh: ptr nfq_q_handle
+    h: nfq_handle
+    qh: nfq_q_handle
     fd: SocketHandle
   h = nfq_open()
   if h == nil:
