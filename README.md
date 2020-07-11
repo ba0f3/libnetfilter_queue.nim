@@ -48,5 +48,5 @@ nfq.run()
 
 To stop routing traffic:
 ```shell
-$ iptables -t filter -A INPUT -j NFQUEUE --queue-num 30
+$ iptables -t filter -D INPUT -j NFQUEUE --queue-num 30
 ```
