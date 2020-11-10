@@ -1,4 +1,4 @@
-import posix, libnetfilter_queue, libnetfilter_queue/[raw, utils]
+import posix, libnetfilter_queue, libnetfilter_queue/[raw]
 
 
 proc cb(id: uint32, buffer: pointer, bufLen: int32, res: var Result) =

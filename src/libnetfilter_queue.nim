@@ -1,5 +1,4 @@
-import posix, libnetfilter_queue/raw
-
+import posix, libnetfilter_queue/raw, private/[libmnl, netlink]
 
 const
   NF_DROP* = 0
@@ -45,10 +44,12 @@ proc nfq_callback(qh: nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data
 
 proc initNetfilterQueue*(num: uint16, cb: Callback): NetfilterQueue =
   ## Register `cb` to NFQUEUE `num`
+
   var
     h: nfq_handle
     qh: nfq_q_handle
     fd: SocketHandle
+
   h = nfq_open()
   if h == nil:
     error("error during nfq_open()")
@@ -103,3 +104,29 @@ proc close*(nfq: var NetfilterQueue) =
   nfq.running = false
   nfq_destroy_queue(nfq.qh)
   nfq_close(nfq.h)
+
+
+
+#[
+  https://git.netfilter.org/libnetfilter_queue/tree/examples/nf-queue.c
+  var
+    nl: mnl_socket
+    buffer: pointer
+    sizeofBuffer = 0xffff + (MNL_SOCKET_BUFFER_SIZE / 2)
+    nhl: nlmsghdr
+    portid: cuint
+
+  nl = mnl_socket_open(NETLINK_NETFILTER)
+  if nl == nil:
+    error("mnl_socket_open")
+
+  if mnl_socket_bind(nl, 0, MNL_SOCKET_AUTOPID) < 0:
+    error("mnl_socket_bind")
+
+  portid = mnl_socket_get_portid(nl)
+  buffer = alloc(sizeofBuffer)
+  if buffer == nil:
+    error("allocate receive buffer")
+
+  nlh = nfq_nlmsg_put(buf, NFQNL_MSG_CONFIG, num)
+]#

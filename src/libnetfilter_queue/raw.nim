@@ -10,9 +10,9 @@
 ##  of the GNU General Public License, incorporated herein by reference.
 ##
 
-{.passL: "-lnfnetlink -lnetfilter_queue".}
+{.passL: "-lnfnetlink -lnetfilter_queue -lmnl".}
 
-import posix, ../private/nfnetlink_queue
+import posix, ../private/[netlink, nfnetlink_queue]
 export nfnetlink_queue
 
 type
@@ -37,10 +37,6 @@ type
 
   nfq_data* {.bycopy.} = object
     data*: ptr ptr nfattr
-
-  nlattr* {.bycopy.} = object
-    nla_len*: uint16
-    nla_type*: uint16
 
   pkt_buff* {.bycopy.} = ptr object
     mac_header*: ptr uint8
@@ -114,7 +110,7 @@ const
 {.push importc, cdecl, discardable.}
 
 proc nfq_nfnlh*(h: nfq_handle): ptr nfnl_handle
-proc nfq_fd*(h: nfq_handle): int32
+proc nfq_fd*(h: nfq_handle): int32 {.deprecated.}
 
 proc nfq_open*(): nfq_handle
 proc nfq_open_nfnl*(nfnlh: ptr nfnl_handle): nfq_handle
@@ -122,19 +118,19 @@ proc nfq_close*(h: nfq_handle): int32
 proc nfq_bind_pf*(h: nfq_handle; pf: uint16): int32
 proc nfq_unbind_pf*(h: nfq_handle; pf: uint16): int32
 proc nfq_create_queue*(h: nfq_handle; num: uint16; cb: nfq_callback;
-                      data: pointer): nfq_q_handle
-proc nfq_destroy_queue*(qh: nfq_q_handle): int32
-proc nfq_handle_packet*(h: nfq_handle; buf: cstring; len: int32): int32
-proc nfq_set_mode*(qh: nfq_q_handle; mode: uint8; len: uint32): int32
-proc nfq_set_queue_maxlen*(qh: nfq_q_handle; queuelen: uint32): int32
-proc nfq_set_queue_flags*(qh: nfq_q_handle; mask: uint32; flags: uint32): int32
+                      data: pointer): nfq_q_handle {.deprecated.}
+proc nfq_destroy_queue*(qh: nfq_q_handle): int32 {.deprecated.}
+proc nfq_handle_packet*(h: nfq_handle; buf: cstring; len: int32): int32 {.deprecated.}
+proc nfq_set_mode*(qh: nfq_q_handle; mode: uint8; len: uint32): int32 {.deprecated.}
+proc nfq_set_queue_maxlen*(qh: nfq_q_handle; queuelen: uint32): int32 {.deprecated.}
+proc nfq_set_queue_flags*(qh: nfq_q_handle; mask: uint32; flags: uint32): int32 {.deprecated.}
 proc nfq_set_verdict*(qh: nfq_q_handle; id: uint32; verdict: uint32;
-                     data_len: uint32; buf: pointer): int32
+                     data_len: uint32; buf: pointer): int32 {.deprecated.}
 proc nfq_set_verdict2*(qh: nfq_q_handle; id: uint32; verdict: uint32;
-                      mark: uint32; datalen: uint32; buf: pointer): int32
-proc nfq_set_verdict_batch*(qh: nfq_q_handle; id: uint32; verdict: uint32): int32
+                      mark: uint32; datalen: uint32; buf: pointer): int32 {.deprecated.}
+proc nfq_set_verdict_batch*(qh: nfq_q_handle; id: uint32; verdict: uint32): int32 {.deprecated.}
 proc nfq_set_verdict_batch2*(qh: nfq_q_handle; id: uint32; verdict: uint32;
-                            mark: uint32): int32
+                            mark: uint32): int32 {.deprecated.}
 proc nfq_set_verdict_mark*(qh: nfq_q_handle; id: uint32; verdict: uint32;
                           mark: uint32; datalen: uint32; buf: pointer): int32 {.deprecated.}
 ##  message parsing function

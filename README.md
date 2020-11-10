@@ -7,11 +7,11 @@ This module helps you build your own custom firewall with libnetfilter_queue lib
 Currently it does not support multithreading nor async processing yet. To improve performance, consider use iptables's `--queue-balance` flags and start multiple instances that listen on multiple queues
 
 ## Installation
-*`libnetfilter_queue1` is required, `libnetfilter-queue-dev` only required for development*
+*`libnetfilter_queue1` is required, `libnetfilter-queue-dev` and `libmnl-dev` only required for development*
 
 ```shell
 # Install libnetfilter-queue1 and its development headers
-$ apt install libnetfilter-queue1 libnetfilter-queue-dev
+$ apt install libnetfilter-queue1 libnetfilter-queue-dev libmnl-dev
 
 # Install this wrapper from Nimble directory
 $ nimble intall libnetfilter_queue

@@ -1,6 +1,6 @@
 import posix, libnetfilter_queue/raw
 
-proc cb(qh: ptr nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data: pointer): cint {.cdecl.} =
+proc cb(qh: nfq_q_handle; nfmsg: ptr nfgenmsg; nfa: ptr nfq_data; data: pointer): cint {.cdecl.} =
   var
     id: uint32
     ph: ptr nfqnl_msg_packet_hdr
@@ -21,9 +21,7 @@ when isMainModule:
   if nfq_bind_pf(h, AF_INET.uint16) < 0:
     quit("error during nfq_bind_pf()")
 
-  var
-    qh: ptr nfq_q_handle
-  qh = nfq_create_queue(h, 0, cb, nil)
+  var qh = nfq_create_queue(h, 0, cb, nil)
   if qh == nil:
     quit("error during nfq_create_queue()")
 

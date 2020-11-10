@@ -16,13 +16,6 @@ type
     version*: uint8             ##  nfnetlink version
     res_id*: int16            ##  resource id
 
-  nlmsghdr* {.bycopy.} = object
-    nlmsg_len*: uint32          ##  Length of message including header
-    nlmsg_type*: uint16         ##  Message content
-    nlmsg_flags*: uint16        ##  Additional flags
-    nlmsg_seq*: uint32          ##  Sequence number
-    nlmsg_pid*: uint32          ##  Sending process port ID
-
   nfqnl_msg_packet_hdr* {.bycopy, packed.} = object
     packet_id*: int32         ##  unique ID of packet in queue
     hw_protocol*: int16       ##  hw protocol (network order)
